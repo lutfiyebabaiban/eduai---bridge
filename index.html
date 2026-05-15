@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduAI-Bridge — Kariyer Yol Haritası</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f7fa;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
+  .app{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:560px;padding:2rem}
+  .header{display:flex;align-items:center;gap:10px;margin-bottom:0.5rem}
+  .logo{width:36px;height:36px;background:#E1F5EE;border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .logo i{font-size:20px;color:#1D9E75}
+  h1{font-size:20px;font-weight:600;color:#111}
+  .subtitle{font-size:13px;color:#888;margin-bottom:1.5rem}
+  /* Step bar */
+  .stepbar{display:flex;align-items:center;margin-bottom:2rem}
+  .step-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;border:2px solid #e0e0e0;background:#f5f5f5;color:#aaa;transition:all .3s}
+  .step-circle.active{background:#1D9E75;border-color:#1D9E75;color:#fff}
+  .step-circle.done{background:#E1F5EE;border-color:#1D9E75;color:#1D9E75}
+  .step-label{font-size:11px;color:#aaa;white-space:nowrap}
+  .step-label.active{color:#111;font-weight:500}
+  .step-line{flex:1;height:2px;background:#e0e0e0;margin:0 6px;margin-bottom:18px;transition:background .3s}
+  .step-line.done{background:#1D9E75}
+  /* Cards */
+  .career-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+  .career-card{padding:1rem;border-radius:12px;border:1.5px solid #e8e8e8;background:#fff;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s}
+  .career-card:hover{border-color:#1D9E75;background:#f0fdf8}
+  .career-card.selected{border-color:#1D9E75;background:#E1F5EE}
+  .career-card i{font-size:20px;color:#aaa}
+  .career-card.selected i{color:#0F6E56}
+  .career-card span{font-size:13px;color:#333}
+  .career-card.selected span{color:#0F6E56;font-weight:500}
+  /* Skill input */
+  .skill-input-row{display:flex;gap:8px;margin-bottom:1rem}
+  .skill-input-row input{flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid #e0e0e0;font-size:14px;outline:none;transition:border .2s}
+  .skill-input-row input:focus{border-color:#1D9E75}
+  .add-btn{padding:10px 16px;background:#1D9E75;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:18px;display:flex;align-items:center}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem;min-height:36px}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;background:#E6F1FB;color:#0C447C;font-size:13px;border:1px solid #B5D4F4}
+  .chip .remove{cursor:pointer;font-size:12px;opacity:.7}
+  .chip .remove:hover{opacity:1}
+  .hint{font-size:13px;color:#aaa;margin-bottom:1rem}
+  /* Buttons */
+  .btn-primary{width:100%;padding:13px;background:#1D9E75;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-primary:hover{background:#0F6E56}
+  .btn-primary:disabled{background:#ccc;cursor:default}
+  .btn-secondary{padding:12px 20px;background:#fff;color:#555;border:1.5px solid #e0e0e0;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer}
+  .btn-row{display:flex;gap:8px}
+  .btn-row .btn-primary{flex:1}
+  /* Analysis */
+  .analysis-center{text-align:center;padding:3rem 1rem}
+  .brain-icon{width:72px;height:72px;background:#E1F5EE;border-radius:50%;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center}
+  .brain-icon i{font-size:36px;color:#1D9E75}
+  .progress-bar-bg{background:#e8e8e8;border-radius:8px;height:8px;overflow:hidden;margin-bottom:8px}
+  .progress-bar-fill{height:100%;background:#1D9E75;border-radius:8px;transition:width .8s ease}
+  .status-text{font-size:13px;color:#888}
+  /* Results */
+  .score-box{background:#E1F5EE;border:1px solid #9FE1CB;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:16px}
+  .score-num{font-size:28px;font-weight:700;color:#085041}
+  .score-label{font-size:12px;color:#0F6E56}
+  .score-bar-bg{flex:1;background:#9FE1CB;border-radius:8px;height:8px;overflow:hidden}
+  .score-bar-fill{height:100%;background:#1D9E75;border-radius:8px}
+  .tabs{display:flex;gap:4px;background:#f5f5f5;padding:4px;border-radius:10px;margin-bottom:1.5rem}
+  .tab{flex:1;padding:8px;border:none;background:transparent;border-radius:8px;font-size:14px;cursor:pointer;color:#888;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+  .tab.active{background:#fff;color:#111;font-weight:500;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+  .section-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+  .section-title{font-size:13px;font-weight:500;color:#666;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  .badge-hard{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;background:#E6F1FB;color:#0C447C;font-size:13px;border:1px solid #B5D4F4;margin:3px}
+  .badge-soft{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;background:#EEEDFE;color:#3C3489;font-size:13px;border:1px solid #CECBF6;margin:3px}
+  .badge-good{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;background:#C0DD97;color:#27500A;font-size:13px;margin:3px}
+  .green-card{background:#EAF3DE;border:1px solid #C0DD97;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+  .green-title{font-size:13px;font-weight:500;color:#3B6D11;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  /* Roadmap */
+  .roadmap-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+  .week-circle{width:38px;height:38px;border-radius:50%;background:#E1F5EE;border:2px solid #1D9E75;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:13px;font-weight:700;color:#0F6E56}
+  .week-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:.85rem 1rem;flex:1}
+  .week-title{font-weight:600;font-size:14px;color:#111;margin-bottom:4px}
+  .week-task{font-size:13px;color:#555;margin-bottom:6px}
+  .week-resource{font-size:12px;color:#aaa;display:flex;align-items:center;gap:5px}
+  /* Hidden */
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo"><i class="ti ti-route"></i></div>
+    <h1>EduAI-Bridge</h1>
+  </div>
+  <p class="subtitle">Kariyer hedefine giden kişisel yol haritanı oluştur</p>
+
+  <!-- Step Bar -->
+  <div class="stepbar" id="stepbar">
+    <div class="step-item">
+      <div class="step-circle active" id="sc0">1</div>
+      <span class="step-label active" id="sl0">Kariyer Seç</span>
+    </div>
+    <div class="step-line" id="sline0"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc1">2</div>
+      <span class="step-label" id="sl1">Beceriler</span>
+    </div>
+    <div class="step-line" id="sline1"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc2">3</div>
+      <span class="step-label" id="sl2">AI Analizi</span>
+    </div>
+    <div class="step-line" id="sline2"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc3">4</div>
+      <span class="step-label" id="sl3">Yol Haritası</span>
+    </div>
+  </div>
+
+  <!-- STEP 0: Kariyer Seç -->
+  <div id="step0">
+    <p style="font-size:14px;color:#555;margin-bottom:1rem">Hangi kariyer yolunu hedefliyorsun?</p>
+    <div class="career-grid">
+      <div class="career-card" onclick="selectCareer('frontend',this)"><i class="ti ti-browser"></i><span>Frontend Developer</span></div>
+      <div class="career-card" onclick="selectCareer('backend',this)"><i class="ti ti-server"></i><span>Backend Developer</span></div>
+      <div class="career-card" onclick="selectCareer('data',this)"><i class="ti ti-chart-bar"></i><span>Data Scientist</span></div>
+      <div class="career-card" onclick="selectCareer('product',this)"><i class="ti ti-package"></i><span>Product Manager</span></div>
+      <div class="career-card" onclick="selectCareer('devops',this)"><i class="ti ti-settings"></i><span>DevOps Engineer</span></div>
+      <div class="career-card" onclick="selectCareer('mobile',this)"><i class="ti ti-device-mobile"></i><span>Mobile Developer</span></div>
+    </div>
+    <button class="btn-primary" id="btn0" disabled onclick="goStep(1)">
+      Devam Et <i class="ti ti-arrow-right"></i>
+    </button>
+  </div>
+
+  <!-- STEP 1: Beceri Gir -->
+  <div id="step1" class="hidden">
+    <p style="font-size:14px;color:#555;margin-bottom:1rem">Halihazırda bildiğin teknoloji veya becerileri gir:</p>
+    <div class="skill-input-row">
+      <input type="text" id="skillInput" placeholder="örn: React, Python, SQL..." onkeydown="if(event.key==='Enter')addSkill()">
+      <button class="add-btn" onclick="addSkill()"><i class="ti ti-plus"></i></button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <p class="hint" id="skillHint">Beceri ekle ya da boş bırak — AI genel analiz yapar.</p>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goStep(0)"><i class="ti ti-arrow-left"></i> Geri</button>
+      <button class="btn-primary" onclick="goStep(2)">Analiz Başlat <i class="ti ti-sparkles"></i></button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Analiz -->
+  <div id="step2" class="hidden">
+    <div class="analysis-center">
+      <div class="brain-icon"><i class="ti ti-brain"></i></div>
+      <p style="font-weight:600;font-size:16px;margin-bottom:1.5rem;color:#111">Yapay zeka analiz ediyor...</p>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+      <p class="status-text" id="statusText">CV analiz ediliyor...</p>
+    </div>
+  </div>
+
+  <!-- STEP 3: Sonuçlar -->
+  <div id="step3" class="hidden">
+    <!-- Score -->
+    <div class="score-box">
+      <div>
+        <p class="score-label">Kariyer eşleşme skoru</p>
+        <p class="score-num" id="scoreNum">0%</p>
+      </div>
+      <div class="score-bar-bg"><div class="score-bar-fill" id="scoreBar" style="width:0%"></div></div>
+      <div style="text-align:right">
+        <p style="font-size:12px;color:#0F6E56">Hedef</p>
+        <p style="font-size:14px;font-weight:600;color:#085041" id="careerLabel2"></p>
+      </div>
+    </div>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="tab-gaps" onclick="switchTab('gaps')"><i class="ti ti-list-check"></i> Skill Analizi</button>
+      <button class="tab" id="tab-roadmap" onclick="switchTab('roadmap')"><i class="ti ti-map"></i> Yol Haritası</button>
+    </div>
+    <!-- Gaps -->
+    <div id="panel-gaps">
+      <div class="section-card">
+        <p class="section-title"><i class="ti ti-code"></i> Hard Skill Eksiklikleri</p>
+        <div id="hardGapBadges"></div>
+      </div>
+      <div class="section-card">
+        <p class="section-title"><i class="ti ti-users"></i> Soft Skill Eksiklikleri</p>
+        <div id="softGapBadges"></div>
+      </div>
+      <div class="green-card">
+        <p class="green-title"><i class="ti ti-star"></i> Güçlü Yönlerin</p>
+        <div id="strengthBadges"></div>
+      </div>
+    </div>
+    <!-- Roadmap -->
+    <div id="panel-roadmap" class="hidden" id="roadmapList"></div>
+    <button class="btn-primary" style="margin-top:1rem" onclick="resetApp()"><i class="ti ti-refresh"></i> Yeni Analiz Yap</button>
+  </div>
+</div>
+
+<script>
+let selectedCareer = '';
+let skills = [];
+const careerLabels = {
+  frontend:'Frontend Developer', backend:'Backend Developer',
+  data:'Data Scientist', product:'Product Manager',
+  devops:'DevOps Engineer', mobile:'Mobile Developer'
+};
+
+function selectCareer(id, el) {
+  selectedCareer = id;
+  document.querySelectorAll('.career-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btn0').disabled = false;
+}
+
+function addSkill() {
+  const input = document.getElementById('skillInput');
+  const val = input.value.trim();
+  if (!val || skills.includes(val)) return;
+  skills.push(val);
+  input.value = '';
+  renderChips();
+}
+
+function renderChips() {
+  const container = document.getElementById('chips');
+  container.innerHTML = '';
+  skills.forEach(s => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `${s} <span class="remove" onclick="removeSkill('${s}')">✕</span>`;
+    container.appendChild(chip);
+  });
+  document.getElementById('skillHint').style.display = skills.length ? 'none' : 'block';
+}
+
+function removeSkill(s) {
+  skills = skills.filter(x => x !== s);
+  renderChips();
+}
+
+function goStep(n) {
+  [0,1,2,3].forEach(i => {
+    document.getElementById('step'+i).classList.add('hidden');
+    const sc = document.getElementById('sc'+i);
+    const sl = document.getElementById('sl'+i);
+    if (i < n) { sc.className='step-circle done'; sc.innerHTML='✓'; sl.className='step-label'; }
+    else if (i === n) { sc.className='step-circle active'; sc.innerHTML=i+1; sl.className='step-label active'; }
+    else { sc.className='step-circle'; sc.innerHTML=i+1; sl.className='step-label'; }
+    if (i < 3) document.getElementById('sline'+i).className = 'step-line' + (i < n ? ' done' : '');
+  });
+  document.getElementById('step'+n).classList.remove('hidden');
+  if (n === 2) startAnalysis();
+}
+
+function startAnalysis() {
+  let p = 0;
+  const msgs = ['CV analiz ediliyor...','Sektör veritabanı taranıyor...','Skill gap hesaplanıyor...','Yol haritası oluşturuluyor...'];
+  let mi = 0;
+  const iv = setInterval(() => {
+    p += 22; if (p > 92) p = 92;
+    document.getElementById('progressFill').style.width = p + '%';
+    if (msgs[mi+1]) { mi++; document.getElementById('statusText').textContent = msgs[mi]; }
+  }, 900);
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: 'Sen bir kariyer koçusun. SADECE geçerli JSON döndür, başka hiçbir şey yazma. Format: {"hardGaps":["b1","b2","b3","b4"],"softGaps":["b1","b2","b3"],"strengths":["g1","g2","g3"],"weeklyPlan":[{"week":1,"title":"başlık","task":"görev","resource":"kaynak"},{"week":2,"title":"başlık","task":"görev","resource":"kaynak"},{"week":3,"title":"başlık","task":"görev","resource":"kaynak"},{"week":4,"title":"başlık","task":"görev","resource":"kaynak"}],"matchScore":42}',
+      messages: [{ role: 'user', content: `Hedef: ${careerLabels[selectedCareer]}\nMevcut beceriler: ${skills.join(', ') || 'belirtilmedi'}\nJSON döndür.` }]
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    clearInterval(iv);
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('statusText').textContent = 'Tamamlandı!';
+    const text = (data.content || []).map(b => b.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    setTimeout(() => showResults(JSON.parse(clean)), 600);
+  })
+  .catch(() => {
+    clearInterval(iv);
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('statusText').textContent = 'Tamamlandı!';
+    setTimeout(() => showResults({
+      hardGaps: ['TypeScript','Docker','PostgreSQL','Redis'],
+      softGaps: ['Takım iletişimi','Zaman yönetimi','Sunum becerileri'],
+      strengths: ['HTML/CSS','Problem çözme','Öğrenme hızı'],
+      weeklyPlan: [
+        {week:1,title:'Temel TypeScript',task:'TypeScript Handbook oku, mini proje yap',resource:'typescriptlang.org/docs'},
+        {week:2,title:'Docker Temelleri',task:'Docker compose ile uygulama containerize et',resource:'docs.docker.com'},
+        {week:3,title:'PostgreSQL',task:'CRUD API + ORM entegrasyonu',resource:'postgresql.org/docs'},
+        {week:4,title:'Sunum Becerileri',task:'Projeyi 5 dk sunuş yap (kayıt al)',resource:'Toastmasters metodolojisi'}
+      ],
+      matchScore: 38
+    }), 600);
+  });
+}
+
+function showResults(r) {
+  document.getElementById('scoreNum').textContent = r.matchScore + '%';
+  document.getElementById('scoreBar').style.width = r.matchScore + '%';
+  document.getElementById('careerLabel2').textContent = careerLabels[selectedCareer];
+  document.getElementById('hardGapBadges').innerHTML = r.hardGaps.map(s=>`<span class="badge-hard">${s}</span>`).join('');
+  document.getElementById('softGapBadges').innerHTML = r.softGaps.map(s=>`<span class="badge-soft">${s}</span>`).join('');
+  document.getElementById('strengthBadges').innerHTML = r.strengths.map(s=>`<span class="badge-good">${s}</span>`).join('');
+  document.getElementById('panel-roadmap').innerHTML = r.weeklyPlan.map(w=>`
+    <div class="roadmap-item">
+      <div class="week-circle">${w.week}</div>
+      <div class="week-card">
+        <p class="week-title">${w.title}</p>
+        <p class="week-task">${w.task}</p>
+        <p class="week-resource"><i class="ti ti-book" style="font-size:12px"></i> ${w.resource}</p>
+      </div>
+    </div>
+  `).join('');
+  goStep(3);
+}
+
+function switchTab(t) {
+  document.getElementById('panel-gaps').classList.toggle('hidden', t !== 'gaps');
+  document.getElementById('panel-roadmap').classList.toggle('hidden', t !== 'roadmap');
+  document.getElementById('tab-gaps').classList.toggle('active', t === 'gaps');
+  document.getElementById('tab-roadmap').classList.toggle('active', t === 'roadmap');
+}
+
+function resetApp() {
+  selectedCareer = ''; skills = [];
+  document.querySelectorAll('.career-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('btn0').disabled = true;
+  document.getElementById('chips').innerHTML = '';
+  document.getElementById('skillHint').style.display = 'block';
+  goStep(0);
+}
+</script>
+</body>
+</html>
