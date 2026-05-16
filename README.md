@@ -11,9 +11,9 @@ EduAI-Bridge, üniversite öğrencilerinin özgeçmişlerini veya ilgi alanları
 | Platform | Link |
 |----------|------|
 | 🌐 Web Demo | [eduai-bridge-jued-a0kce7b8i-lutfiyebabaibans-projects.vercel.app](https://eduai-bridge.vercel.app) |
-| 🎥 Demo Video | *Yakında* |
+| 🎥 Demo Video | https://drive.google.com/drive/folders/10ZekdNsRWM4FqafIW3PT4J6alFfm4Ot1?usp=sharing |
 
-| 🎥 Demo Video | *2-3 dk tanıtım videosu — yakında* |
+| 🎥 Demo Video | *2-3 dk tanıtım videosu* |
 
 ---
 
